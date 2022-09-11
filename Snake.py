@@ -2,7 +2,6 @@ import pygame
 import sys
 from random import randint
 from PIL import Image
-# from Client_window import win_size_x, win_size_y, tail_size,body_offset
 
 pygame.init()
 
@@ -32,6 +31,7 @@ class Snake_head(pygame.sprite.Sprite):
         if self.rect.bottom > height:
             self.rect.top = 0
 
+# In a work process
 class Tail(pygame.sprite.Sprite):
 
     def __init__(self, pos):
@@ -58,16 +58,15 @@ class Tail(pygame.sprite.Sprite):
             self.rect.bottom = height
         if self.rect.bottom > height:
             self.rect.top = 0
+
 class Simple_food(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        width,height = win_size_x,win_size_y
-
         self.image = sim_food_im
         self.rect = self.image.get_rect()
-        self.rect.center = (randint(1,width), randint(1,height))
+        self.rect.center = (randint(1,win_size_x), randint(1,win_size_y))
 
 def Spawn_sim_food():
     sim_food = Simple_food()
@@ -85,6 +84,7 @@ def Spawn_tail():
 def Score_Update():
     global text_score
     text_score = score_font.render(f'Score: {score}', False, (255, 215, 0))
+
 def Add_im_for_sprite(names):
     for name in names:
 
@@ -102,33 +102,29 @@ def Add_im_for_sprite(names):
 def Names_con(dev,typ):
     return {"divider":dev, "type":typ}
 
+# General parameters
 win_size_x = 600
 win_size_y = 600
+FPS = 60
+run_speed = 10
+score = 0
+sim_food_time_delay = 5000
 
+# Size, positions and offsets
 item_size = win_size_x + win_size_y
 head_size = item_size // 30
 food_size = item_size // 35
 score_font_size = int(win_size_x*0.05)
 tail_size = item_size // head_size // 1.1
 body_offset = tail_size
+body_pos = (0,0)
+x_point,y_point = 0,0
 
+# Create pictures
 names =  {"forest.jpg":Names_con(1,"back"), "head.png":Names_con(head_size,"item"), "sim_food.png":Names_con(food_size,"item")}
 Add_im_for_sprite(names)
 
-FPS = 100
-score = 0
-body_pos = (0,0)
-run_speed = 10
-sim_food_time_delay = 5000
-sim_food_time_delay_part = 0
-
-score_font_size = int(win_size_x*0.05)
-
-score_font = pygame.font.SysFont('Comic Sans MS', score_font_size)
-
-text_score = None
-head = None
-
+# Game pictures
 back_im = pygame.image.load("im_sprites_player_change\\forest.jpg")
 head_ic = pygame.image.load('im_sprites\\head.png')
 head_im = pygame.image.load("im_sprites_player_change\\head.png")
@@ -138,17 +134,24 @@ window = pygame.display.set_mode((win_size_x,win_size_y))
 pygame.display.set_caption('Uchi_snake')
 pygame.display.set_icon(head_ic)
 
-body_sprites = pygame.sprite.Group()
-food_sprites = pygame.sprite.Group()
-
+# Time
 clock = pygame.time.Clock()
-spawn_food_speed = 10
-
-x_point,y_point = 0,0
-
+sim_food_time_delay_part = 0
 sim_food_time = 0
 move_time = 0
 
+# Text
+score_font_size = int(win_size_x*0.05)
+score_font = pygame.font.SysFont('Comic Sans MS', score_font_size)
+
+# Objectes
+body_sprites = pygame.sprite.Group()
+food_sprites = pygame.sprite.Group()
+
+text_score = None
+head = None
+
+# Start Code
 Spawn_Snake()
 Score_Update()
 
@@ -187,21 +190,21 @@ while True:
         body_sprites.update()
         move_time = current_time + 250
 
-    window.blit(back_im, (0, 0))
-    window.blit(text_score, (0, 0))
-
     food_sprites.update()
 
     eat = pygame.sprite.spritecollide(head,food_sprites,True)
+
     if eat:
         score += 1
-        Spawn_tail()
         if score%7 == 0:
             run_speed += run_speed*0.3
             sim_food_time_delay_part += 500 + 0.5*sim_food_time_delay_part
 
         Score_Update()
         window.blit(text_score, (0, 0))
+
+    window.blit(back_im, (0, 0))
+    window.blit(text_score, (0, 0))
 
     body_sprites.draw(window)
     food_sprites.draw(window)

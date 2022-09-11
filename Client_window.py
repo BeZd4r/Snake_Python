@@ -1,4 +1,3 @@
-import Snake
 from PIL import Image
 
 win_size_x = 600
@@ -30,5 +29,3 @@ def Names_con(dev,typ):
 
 names =  {"forest.jpg":Names_con(1,"back"), "head.png":Names_con(head_size,"item"), "sim_food.png":Names_con(food_size,"item")}
 Add_im_for_sprite(names)
-
-Snake(win_size_y)
